@@ -1,0 +1,11 @@
+{
+  "engram": {
+    "transport": "sse",
+    "url": "https://mcp.lumetra.io/mcp/sse",
+    "headers": {
+      "Authorization": "Bearer eng_live_..."
+    },
+    "timeout": 30,
+    "sse_read_timeout": 600
+  }
+}
