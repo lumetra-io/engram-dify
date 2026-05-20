@@ -30,3 +30,6 @@ tags:
   - utilities
 type: plugin
 version: 0.0.2
+privacy: PRIVACY.md
+repo: https://github.com/lumetra-io/engram-dify
+verified: false

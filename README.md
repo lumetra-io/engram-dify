@@ -46,6 +46,12 @@ curl -s https://api.lumetra.io/v1/buckets \
 
 A JSON bucket list confirms the key is valid. If Dify shows the plugin as installed but tools fail, double-check the key in the Authorize dialog and that the Dify worker process can reach `api.lumetra.io` from inside its container.
 
+## Source & contact
+
+- Source: <https://github.com/lumetra-io/engram-dify>
+- Issues: <https://github.com/lumetra-io/engram-dify/issues>
+- Lumetra: <https://lumetra.io> · <support@lumetra.io>
+
 ## License
 
 MIT — Lumetra
