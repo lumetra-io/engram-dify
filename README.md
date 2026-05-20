@@ -1,8 +1,8 @@
 # engram-dify
 
-[Dify](https://github.com/langgenius/dify) integration for [Engram](https://lumetra.io) — durable, explainable memory for the open-source LLM app platform.
+[Engram](https://lumetra.io) tools for [Dify](https://dify.ai) — durable, explainable memory for AI agents and chatflows.
 
-Adds six MCP tools to Dify Agents — `store_memory`, `query_memory`, `list_memories`, `list_buckets`, `delete_memory`, `clear_memories` — backed by the hosted Engram MCP server.
+This is a first-party Dify plugin. Six tools (`store_memory`, `query_memory`, `list_memories`, `list_buckets`, `delete_memory`, `clear_memories`) call the hosted Engram REST API directly. No MCP bridge, no servers_config JSON, no community-plugin dependency — install from the Dify Marketplace and the tools appear in the catalog.
 
 ## Setup
 
@@ -12,51 +12,28 @@ Sign up at <https://lumetra.io> — free tier, no card. You'll see an `eng_live_
 
 ### 2. Configure a BYOK provider key
 
-Engram is bring-your-own-key end-to-end for the LLM that handles extraction and synthesis. Configure one provider at <https://lumetra.io/models>. DeepSeek is what we recommend — cheap and fast. Without a provider key, every `store_memory` / `query_memory` returns HTTP 412.
+Engram is bring-your-own-key for the LLM that handles extraction and synthesis. Configure one provider at <https://lumetra.io/models>. DeepSeek is what we recommend — cheap and fast. Without a provider key, `store_memory` and `query_memory` return HTTP 412.
 
-### 3. Install the Dify MCP plugin
+### 3. Install the plugin
 
-Dify 1.0+ supports MCP via a plugin. The community-maintained one is **`dify-plugin-tools-mcp_sse`** by Junjie M:
+In your Dify console: **Plugins → Marketplace** → search **"Engram"** → install. Then **Plugins → Installed → Engram** → **Authorize** and paste your `eng_live_...` API key.
 
-- Plugin repo: <https://github.com/junjiem/dify-plugin-tools-mcp_sse>
-- Install it from your Dify console: **Plugins → Marketplace** → search for "MCP HTTP with SSE", install.
+The six tools are now available in the tool catalog for Agents, Chatflows, and Workflows.
 
-(There's also `dify-plugin-agent-mcp_sse` if you want an Agent-strategy-level integration rather than a tools-level one.)
-
-### 4. Configure the engram MCP server inside the plugin
-
-After the plugin is installed, open its config and add the Engram server:
-
-```json
-{
-  "engram": {
-    "transport": "sse",
-    "url": "https://mcp.lumetra.io/mcp/sse",
-    "headers": {
-      "Authorization": "Bearer eng_live_..."
-    },
-    "timeout": 30,
-    "sse_read_timeout": 600
-  }
-}
-```
-
-Save. The six Engram tools appear in the Dify tool catalog and can be added to any Agent / Chatflow / Workflow that consumes tools.
-
-## Tools exposed
+## Tools
 
 | Tool | What it does |
 |---|---|
-| `store_memory(content, bucket?)` | Save a fact to a bucket (defaults to `"default"`). |
-| `query_memory(question, bucket?)` | Hybrid retrieval + synthesized answer with citations. |
-| `list_memories(bucket, limit?)` | Newest-first list of memories in a bucket. |
-| `list_buckets(limit?, offset?)` | Paginated list of all buckets in your tenant. |
-| `delete_memory(memory_id, bucket)` | Remove a single memory. |
-| `clear_memories(bucket)` | Empty a bucket. Destructive. |
+| `store_memory(content, bucket?)` | Save an atomic fact to a bucket. Defaults to `"default"`. Buckets auto-create on first write. |
+| `query_memory(question, bucket?)` | Natural-language question against memory. Returns a synthesized answer with citations. |
+| `list_memories(bucket?, limit?)` | Newest-first list of memories in a bucket. |
+| `list_buckets(limit?, offset?)` | Paginated list of buckets in your tenant. |
+| `delete_memory(memory_id, bucket)` | Remove a single memory by UUID. |
+| `clear_memories(bucket)` | Empty a bucket. **Destructive.** |
 
-## A note on Dify's MCP support
+## Self-hosted Engram
 
-As of writing, Dify's MCP support is via community plugins rather than first-party integration. The `dify-plugin-tools-mcp_sse` plugin above is the most-maintained option and supports both SSE and Streamable HTTP. Watch [the Dify changelog](https://docs.dify.ai/) for first-party MCP integration as the platform matures.
+If you're running Engram on your own infrastructure instead of `api.lumetra.io`, set the **Engram API Base URL** field in the Authorize dialog to your endpoint (e.g. `https://engram.internal.example.com`).
 
 ## Manual verification
 
@@ -64,10 +41,10 @@ Outside Dify, confirm Engram itself is reachable with your key:
 
 ```bash
 curl -s https://api.lumetra.io/v1/buckets \
-  -H "authorization: Bearer eng_live_..." | head -c 300
+  -H "Authorization: Bearer eng_live_..." | head -c 300
 ```
 
-You should see a JSON bucket list. If that 200s but the Dify MCP plugin shows the engram server as offline / no-tools, double-check the plugin config JSON syntax (Dify's plugin config UI is strict about commas) and that the Dify worker process can reach `mcp.lumetra.io` from inside Docker (i.e. no firewall / egress blocks).
+A JSON bucket list confirms the key is valid. If Dify shows the plugin as installed but tools fail, double-check the key in the Authorize dialog and that the Dify worker process can reach `api.lumetra.io` from inside its container.
 
 ## License
 
