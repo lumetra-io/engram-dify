@@ -25,7 +25,7 @@ class QueryMemoryTool(Tool):
             response = requests.post(
                 f"{base_url}/v1/query",
                 headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={"query": question, "bucket": bucket},
+                json={"query": question, "buckets": [bucket]},
                 timeout=60,
             )
         except requests.RequestException as exc:
