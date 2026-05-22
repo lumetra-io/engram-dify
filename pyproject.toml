@@ -1,6 +1,6 @@
 [project]
 name = "engram"
-version = "0.0.2"
+version = "0.1.1"
 description = "Durable, explainable memory for AI agents — Engram tools for Dify."
 readme = "README.md"
 requires-python = ">=3.12"
